@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Registro - Kava</title>
+
+  <style>
+    :root {
+      --bg: #1e1e1e;          
+      --panel: #f4f2ee;        
+      --text: #2c2c2c;         
+      --accent: #C1A875;       
+      --cyan: #000000;         
+      --line: #dcdcdc;         
+    }
+
+    body {
+      margin: 0;
+      font-family: system-ui, Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background: var(--bg);
+    }
+
+    main {
+      background: var(--panel);
+      padding: 40px 36px;
+      border-radius: 14px;
+      border: 2px solid var(--accent);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, .25);
+      width: 360px;
+      color: var(--text);
+    }
+
+    header h1 {
+      text-align: center;
+      margin-bottom: 24px;
+      font-weight: 800;
+      color: var(--accent);
+      font-size: 28px;
+    }
+
+    section.field {
+      position: relative;
+      margin-bottom: 20px;
+    }
+
+    section.field input {
+      width: 100%;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      background: #fff;
+      transition: border .2s, box-shadow .2s;
+      font-size: 15px;
+      color: var(--text);
+    }
+
+    section.field input:focus {
+      border-color: var(--accent);
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(139, 94, 60, .25);
+    }
+
+    section.field label {
+      position: absolute;
+      left: 12px;
+      top: 12px;
+      font-size: 14px;
+      color: #666;
+      transition: .2s;
+      pointer-events: none;
+    }
+
+    section.field input:focus + label,
+    section.field input:not(:placeholder-shown) + label {
+      top: -8px;
+      left: 8px;
+      font-size: 12px;
+      background: var(--panel);
+      padding: 0 5px;
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    button.btn {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      background: var(--cyan);
+      color: #fff;
+      cursor: pointer;
+      font-weight: 800;
+      transition: .25s;
+    }
+
+    button.btn:hover {
+      background: var(--accent);
+      transform: translateY(-2px);
+    }
+
+    button.btn:disabled {
+      opacity: .6;
+      cursor: not-allowed;
+    }
+
+    p.msg {
+      margin-top: 6px;
+      text-align: center;
+      font-size: 14px;
+      min-height: 18px;
+      font-weight: 700;
+      color: var(--accent);
+    }
+
+    footer a {
+      margin-top: 16px;
+      text-align: center;
+      display: block;
+      color: var(--cyan);
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+
+<body>
+  <main>
+    <header>
+      <h1>Crear Cuenta</h1>
+    </header>
+
+    <form id="form-registro" autocomplete="off">
+      <section class="field">
+        <input type="text" name="nombre" placeholder=" " required />
+        <label>Nombre completo</label>
+      </section>
+
+      <section class="field">
+        <input type="text" name="direccion" placeholder=" " required />
+        <label>Dirección</label>
+      </section>
+
+      <section class="field">
+        <input type="email" name="correo_electronico" placeholder=" " required />
+        <label>Correo electrónico</label>
+      </section>
+
+      <section class="field">
+        <input type="tel" name="telefono" placeholder=" " />
+        <label>Teléfono</label>
+      </section>
+
+      <section class="field">
+        <input type="password" name="password" placeholder=" " required />
+        <label>Contraseña</label>
+      </section>
+
+      <button class="btn" type="submit" id="btn"> Registrar</button>
+      <p id="msg" class="msg"></p>
+    </form>
+
+    <footer>
+      <a href="Login.html">Ya tengo cuenta</a>
+      <a href="index.html"> Volver</a>
+    </footer>
+  </main>
+
+  <!-- Librerías -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
+
+  <script>
+    // 1) Inicializar EmailJS
+    emailjs.init("tVN64NCqkaZ5taoGC");
+
+    // 2) Inicializar Supabase
+    const client = supabase.createClient(
+      "https://wdfxnrsshcpllgkynedo.supabase.co",
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndkZnhucnNzaGNwbGxna3luZWRvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIwODEyOTgsImV4cCI6MjA3NzY1NzI5OH0.maiNsWZ52NnMOQjCfZUbh3zwmNv2KgMxHCFP2ulssTo"
+    );
+
+    const form = document.getElementById("form-registro");
+    const msg  = document.getElementById("msg");
+    const btn  = document.getElementById("btn");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      msg.textContent = "";
+      msg.style.color = "#c0392b";
+      btn.disabled = true;
+
+      try {
+        const fd = new FormData(form);
+        const telRaw = (fd.get("telefono") || "").toString();
+        const telNum = telRaw ? Number(telRaw.replace(/\D/g, "")) : null;
+
+        const payload = {
+          Nombre: fd.get("nombre"),
+          Direccion: fd.get("direccion"),
+          Telefono: telNum,
+          correo_electronico: fd.get("correo_electronico"),
+          Contraseña: fd.get("password")
+        };
+
+        const { error } = await client.from("Cliente").insert(payload);
+        if (error) {
+          msg.textContent = "❌ " + (error.message || "Error al registrar");
+          return;
+        }
+
+        const SERVICE_ID  = "service_v9zh8e4";
+        const TEMPLATE_ID = "template_4hmutnr";
+        const templateParams = {
+          nombre: payload.Nombre,
+          correo: payload.correo_electronico,
+          to_email: payload.correo_electronico
+        };
+
+        try {
+          await emailjs.send(SERVICE_ID, TEMPLATE_ID, templateParams);
+          console.log("✅ Correo enviado correctamente");
+        } catch (err) {
+          console.error("❌ Error enviando correo:", err);
+        }
+
+        msg.style.color = "green";
+        msg.textContent = "✅ Registrado correctamente";
+        form.reset();
+        setTimeout(() => (window.location.href = "Login.html"), 800);
+
+      } catch (err) {
+        console.error(err);
+        msg.textContent = "❌ Error inesperado. Revisa la consola.";
+      } finally {
+        btn.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Checkout — KAVA</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#000; --card:#111; --line:#222; --muted:#bbb; --white:#fff; --black:#000;
+      --pill:#1a1a1a; --accent:#fff; --gold:#C1A875;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; font-family:"Cormorant Garamond", serif; background:var(--bg); color:var(--white);
+      min-height:100svh; display:grid; grid-template-rows:auto 1fr auto;
+    }
+    header, footer{ padding:20px; border-bottom:1px solid var(--line) }
+    footer{ border-top:1px solid var(--line); border-bottom:none }
+    .wrap{ max-width:1200px; margin:0 auto; width:100%; padding:20px }
+    h1{ margin:0; letter-spacing:.18em; font-weight:600; text-transform:uppercase }
+    .layout{ display:grid; grid-template-columns: 1fr 420px; gap:20px }
+    @media (max-width: 980px){ .layout{ grid-template-columns: 1fr } }
+
+    /* Cards */
+    .card{ background:var(--card); border:1px solid var(--line); border-radius:16px; padding:16px }
+    .card h2{ margin:0 0 12px; letter-spacing:.1em; font-size:22px; font-weight:600 }
+    label{ display:block; font-size:14px; color:#ddd; margin-bottom:6px; letter-spacing:.04em }
+    input,select,textarea{
+      width:100%; padding:10px 12px; border-radius:12px; border:1px solid #333; background:var(--pill);
+      color:#fff; outline:none; font:inherit; letter-spacing:.02em
+    }
+    input::placeholder, textarea::placeholder{ color:#999 }
+    .row{ display:grid; grid-template-columns:1fr 1fr; gap:12px }
+    .row3{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px }
+    .mt{ margin-top:12px }
+    .muted{ color:var(--muted) }
+
+    .pay-tabs{ display:flex; gap:8px; margin-bottom:12px }
+    .tab{
+      flex:1; text-align:center; padding:10px 12px; border-radius:999px; cursor:pointer;
+      border:1px solid #444; background:#0f0f0f; color:#fff; letter-spacing:.04em; user-select:none
+    }
+    .tab[aria-pressed="true"]{ background:#fff; color:#000; border-color:#fff }
+
+    .grid-summary{ position:sticky; top:16px; display:grid; gap:12px; height:max-content }
+    .item{
+      display:grid; grid-template-columns: 64px 1fr auto; gap:10px; align-items:center;
+      padding:10px; border:1px solid var(--line); border-radius:12px; background:#0d0d0d
+    }
+    .item img{ width:64px; height:64px; object-fit:cover; border-radius:8px; filter:grayscale(100%) }
+    .name{ margin:0; font-weight:600; letter-spacing:.04em }
+    .meta{ font-size:13px; color:#bbb }
+    .price{ font-weight:600 }
+
+    .rowp{ display:flex; justify-content:space-between; align-items:center; color:#ddd }
+    hr{ border:none; border-top:1px solid var(--line); margin:8px 0 }
+    .total{ font-size:22px; font-weight:700; color:#fff }
+
+    .btn-primary{
+      width:100%; padding:12px 16px; border-radius:999px; border:none; background:#fff; color:#000;
+      font-weight:700; letter-spacing:.06em; cursor:pointer; transition:.25s
+    }
+    .btn-primary:hover{ transform:scale(1.03); box-shadow:0 0 18px rgba(255,255,255,.25) }
+
+    .ok{ color:#9fe39f }
+    .err{ color:#ff9b9b }
+
+    /* Luxury detail */
+    .lux{ color:var(--gold) }
+    header .topbar{ display:flex; align-items:center; justify-content:space-between; gap:12px }
+    header .back{
+      display:inline-flex; align-items:center; gap:8px; padding:10px 18px; border-radius:999px;
+      background:#fff; color:#000; text-decoration:none; border:1px solid #ccc; transition:.25s
+    }
+    header .back:hover{ transform:scale(1.05); box-shadow:0 0 14px rgba(255,255,255,.45) }
+  </style>
+</head>
+<body>
+  <header>
+    <section class="topbar">
+      <a href="carrito.html" class="back" aria-label="Volver al carrito">← Volver al carrito</a>
+      <h1>Luxury Store — <span class="lux">KAVA</span></h1>
+    </section>
+  </header>
+
+  <main class="wrap">
+    <section class="layout">
+      <!-- Columna izquierda: Datos de envío + Pago -->
+      <form id="checkout-form" class="card" autocomplete="on" novalidate>
+        <h2>Datos de envío</h2>
+
+        <fieldset class="row">
+          <section>
+            <label for="nombres">Nombres</label>
+            <input id="nombres" name="nombres" required placeholder="Tu nombre">
+          </section>
+          <section>
+            <label for="apellidos">Apellidos</label>
+            <input id="apellidos" name="apellidos" required placeholder="Tu apellido">
+          </section>
+        </fieldset>
+
+        <fieldset class="row mt">
+          <section>
+            <label for="email">Correo electrónico</label>
+            <input id="email" name="email" type="email" required placeholder="tucorreo@dominio.com">
+          </section>
+          <section>
+            <label for="telefono">Teléfono</label>
+            <input id="telefono" name="telefono" type="tel" required placeholder="+57 300 000 0000">
+          </section>
+        </fieldset>
+
+        <section class="mt">
+          <label for="direccion">Dirección</label>
+          <input id="direccion" name="direccion" required placeholder="Calle/Carrera y número">
+        </section>
+
+        <fieldset class="row mt">
+          <section>
+            <label for="barrio">Barrio / Conjunto / Apto</label>
+            <input id="barrio" name="barrio" required placeholder="Barrio, torre, apto">
+          </section>
+          <section>
+            <label for="indicaciones">Indicaciones de entrega (opcional)</label>
+            <input id="indicaciones" name="indicaciones" placeholder="Piso 3, portería, etc.">
+          </section>
+        </fieldset>
+
+        <fieldset class="row mt">
+          <section>
+            <label for="ciudad">Ciudad</label>
+            <input id="ciudad" name="ciudad" required placeholder="Medellín">
+          </section>
+          <section>
+            <label for="departamento">Departamento</label>
+            <input id="departamento" name="departamento" required placeholder="Antioquia">
+          </section>
+        </fieldset>
+
+        <h2 class="mt">Método de pago</h2>
+
+        <nav class="pay-tabs" role="tablist" aria-label="Métodos de pago">
+          <button type="button" id="tab-tarjeta" class="tab" role="tab" aria-selected="true" aria-pressed="true">Tarjeta de crédito</button>
+          <button type="button" id="tab-cod" class="tab" role="tab" aria-selected="false" aria-pressed="false">Contra entrega</button>
+        </nav>
+
+        <!-- Tarjeta -->
+        <section id="pago-tarjeta" class="card" aria-labelledby="tab-tarjeta">
+          <section class="mt">
+            <label for="cardName">Nombre en la tarjeta</label>
+            <input id="cardName" autocomplete="cc-name" placeholder="Como aparece en la tarjeta">
+          </section>
+          <section class="mt">
+            <label for="cardNumber">Número de tarjeta</label>
+            <input id="cardNumber" inputmode="numeric" autocomplete="cc-number" maxlength="19" placeholder="0000 0000 0000 0000">
+          </section>
+          <fieldset class="row mt">
+            <section>
+              <label for="cardExp">Vencimiento</label>
+              <input id="cardExp" inputmode="numeric" autocomplete="cc-exp" maxlength="5" placeholder="MM/AA">
+            </section>
+            <section>
+              <label for="cardCvv">CVV</label>
+              <input id="cardCvv" inputmode="numeric" autocomplete="cc-csc" maxlength="4" placeholder="3 o 4 dígitos">
+            </section>
+          </fieldset>
+          <p class="muted mt">* Validación local de ejemplo (no se procesa el pago real).</p>
+        </section>
+
+        <!-- Contra entrega -->
+        <section id="pago-cod" class="card" aria-labelledby="tab-cod" hidden>
+          <p class="muted">Pagarás en efectivo o datáfono al recibir. Asegúrate de que los datos de envío estén completos.</p>
+        </section>
+
+        <button class="btn-primary mt" type="submit">Confirmar pedido</button>
+        <p id="msg" class="muted mt"></p>
+      </form>
+
+      <!-- Columna derecha: Resumen -->
+      <aside class="grid-summary">
+        <section class="card">
+          <h2>Resumen del pedido</h2>
+          <section id="summary-list" style="display:grid; gap:8px"></section>
+          <hr>
+          <p class="rowp"><span>Subtotal</span><span id="sum-sub">—</span></p>
+          <p class="rowp"><span>Envío</span><span class="muted">Se calcula al finalizar</span></p>
+          <hr>
+          <p class="rowp total"><span>Total</span><span id="sum-total">—</span></p>
+        </section>
+
+        <section class="card">
+          <h2>Garantía de compra</h2>
+          <p class="muted">Tus datos no se guardan en el servidor en este demo. La verificación de tarjeta es local (Luhn) y por fines educativos.</p>
+        </section>
+      </aside>
+    </section>
+  </main>
+
+  <footer class="wrap muted">
+    © <span id="year"></span> KAVA — Checkout.
+  </footer>
+
+  <script>
+    const CART_KEY = 'kava_cart';
+    const money = n => new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(n);
+    const readCart = () => {
+      try{ return JSON.parse(localStorage.getItem(CART_KEY)||'[]'); }catch{ return []; }
+    };
+
+    // Render resumen (sin crear <div>)
+    function renderSummary(){
+      const listEl = document.getElementById('summary-list');
+      const subEl  = document.getElementById('sum-sub');
+      const totEl  = document.getElementById('sum-total');
+      const cart = readCart();
+
+      listEl.innerHTML = '';
+      let subtotal = 0;
+
+      if(!cart.length){
+        listEl.innerHTML = '<p class="muted">No hay productos en el carrito.</p>';
+        subEl.textContent = '—';
+        totEl.textContent = '—';
+        return;
+      }
+
+      cart.forEach(it=>{
+        const line = (Number(it.precio)||0) * (Number(it.qty)||0);
+        subtotal += line;
+
+        const row = document.createElement('article');
+        row.className = 'item';
+
+        const img = document.createElement('img');
+        img.src = it.imagen || '';
+        img.alt = it.nombre || 'Producto';
+
+        const info = document.createElement('section');
+        const name = document.createElement('h3');
+        name.className = 'name';
+        name.textContent = it.nombre || 'Producto';
+
+        const meta = document.createElement('p');
+        meta.className = 'meta';
+        meta.textContent = 'Color: ' + (it.color || '—') + ' • Cant: ' + (it.qty||1);
+
+        const price = document.createElement('p');
+        price.className = 'price';
+        price.textContent = money(line);
+
+        info.append(name, meta);
+        row.append(img, info, price);
+        listEl.append(row);
+      });
+
+      subEl.textContent = money(subtotal);
+      totEl.textContent = money(subtotal); // envío se calcula luego
+    }
+
+    // Tabs de pago
+    const tabTarjeta = document.getElementById('tab-tarjeta');
+    const tabCOD = document.getElementById('tab-cod');
+    const secTarjeta = document.getElementById('pago-tarjeta');
+    const secCOD = document.getElementById('pago-cod');
+
+    function selectTab(which){
+      const isCard = which === 'tarjeta';
+      tabTarjeta.setAttribute('aria-pressed', isCard ? 'true':'false');
+      tabCOD.setAttribute('aria-pressed', !isCard ? 'true':'false');
+      tabTarjeta.setAttribute('aria-selected', isCard ? 'true':'false');
+      tabCOD.setAttribute('aria-selected', !isCard ? 'true':'false');
+      secTarjeta.hidden = !isCard;
+      secCOD.hidden = isCard;
+    }
+    tabTarjeta.addEventListener('click', ()=>selectTab('tarjeta'));
+    tabCOD.addEventListener('click', ()=>selectTab('cod'));
+
+    // Formateo y validación tarjeta
+    const cardNumber = document.getElementById('cardNumber');
+    const cardExp = document.getElementById('cardExp');
+    const cardCvv = document.getElementById('cardCvv');
+
+    cardNumber?.addEventListener('input', (e)=>{
+      const digits = e.target.value.replace(/\D/g,'').slice(0,16);
+      e.target.value = digits.replace(/(.{4})/g,'$1 ').trim();
+    });
+    cardExp?.addEventListener('input', (e)=>{
+      const digits = e.target.value.replace(/\D/g,'').slice(0,4);
+      if(digits.length >= 3){
+        e.target.value = digits.slice(0,2) + '/' + digits.slice(2);
+      }else{
+        e.target.value = digits;
+      }
+    });
+
+    function luhnOk(num){
+      const s = num.replace(/\s+/g,'');
+      if(!s) return false;
+      let sum = 0, dbl = false;
+      for(let i = s.length - 1; i >= 0; i--){
+        let d = parseInt(s[i],10);
+        if(dbl){ d*=2; if(d>9) d-=9; }
+        sum += d; dbl = !dbl;
+      }
+      return sum % 10 === 0 && s.length >= 13;
+    }
+    function expOk(mmYY){
+      const m = /^(\d{2})\/(\d{2})$/.exec(mmYY||'');
+      if(!m) return false;
+      const mm = parseInt(m[1],10), yy = 2000 + parseInt(m[2],10);
+      if(mm<1 || mm>12) return false;
+      const now = new Date();
+      const end = new Date(yy, mm, 0);
+      return end >= new Date(now.getFullYear(), now.getMonth(), 1);
+    }
+    function cvvOk(v){ return /^\d{3,4}$/.test(v||''); }
+
+    // Submit
+    const form = document.getElementById('checkout-form');
+    const msg = document.getElementById('msg');
+
+    form.addEventListener('submit', (e)=>{
+      e.preventDefault();
+      msg.textContent = '';
+
+      const reqIds = ['nombres','apellidos','email','telefono','direccion','barrio','ciudad','departamento'];
+      for(const id of reqIds){
+        const el = document.getElementById(id);
+        if(!el || !el.value.trim()){
+          msg.innerHTML = '<span class="err">Completa todos los campos obligatorios de envío.</span>';
+          el?.focus();
+          return;
+        }
+      }
+
+      const payingWithCard = tabTarjeta.getAttribute('aria-pressed') === 'true';
+
+      if(payingWithCard){
+        const okCard = luhnOk(cardNumber.value);
+        const okExp  = expOk(cardExp.value);
+        const okCvv  = cvvOk(cardCvv.value);
+        if(!okCard || !okExp || !okCvv || !document.getElementById('cardName').value.trim()){
+          msg.innerHTML = '<span class="err">Datos de tarjeta inválidos. Revisa número, fecha y CVV.</span>';
+          return;
+        }
+      }
+
+      const cart = readCart();
+      if(!cart.length){
+        msg.innerHTML = '<span class="err">Tu carrito está vacío.</span>';
+        return;
+      }
+
+      const orderId = 'KAVA-' + Math.random().toString(36).slice(2,8).toUpperCase();
+      msg.innerHTML = '<span class="ok">Pedido confirmado. Nº de orden ' + orderId + '.</span>';
+       localStorage.removeItem(CART_KEY);
+       setTimeout(()=>location.href='index.html', 1200);
+    });
+
+    renderSummary();
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>

@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Panel Admin — Kava</title>
+
+<style>
+  :root{
+    --bg:#1b1b1b;
+    --panel:#f3efe9;
+    --panel-strong:#efe9e0;
+    --text:#2f2f2f;
+    --muted:#7a7875;
+    --line:#e3ddd4;
+    --accent:#8b5e3c;
+    --accent-2:#5c4030;
+    --ok:#1f8f5f;
+    --bad:#b34040;
+    --maxw:1200px;
+    --radius:14px;
+    --shadow:0 10px 28px rgba(0,0,0,.18);
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:var(--bg); color:var(--text);
+    min-height:100vh; display:flex; justify-content:center; align-items:flex-start; padding:22px;
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  }
+  main.wrap{
+    width:100%; max-width:var(--maxw);
+    display:grid; gap:18px; grid-template-columns:280px 1fr;
+  }
+
+  /* Sidebar */
+  aside{
+    background:#fbfaf7;
+    border:2px solid #d1b08a;
+    border-radius:var(--radius);
+    box-shadow:var(--shadow);
+    padding:18px;
+    position:sticky; top:22px; height:fit-content;
+  }
+  aside h1{
+    margin:4px 0 0; font-size:36px; line-height:1; color:#7a4f34; font-weight:800;
+    text-shadow:0 1px 0 #fff;
+  }
+  .muted{color:var(--muted)}
+  nav.actions{display:flex; gap:10px; flex-wrap:wrap; margin:10px 0 12px}
+  .btn{
+    background:#333; color:#fff; border:0; padding:10px 14px; border-radius:10px; cursor:pointer; font-weight:700;
+  }
+  .btn:hover{filter:brightness(.95)}
+  .btn.alt{background:#2f3336}
+  .btn.bad{background:#a44b42}
+  .tag{
+    display:inline-block; background:#ece7df; padding:4px 10px; border-radius:999px; font-size:12.5px; font-weight:700;
+    color:#4b4743;
+  }
+  hr.split{border:none; border-top:1px solid #e8e1d8; margin:10px 0 12px}
+
+  /* Pila derecha */
+  section.stack{
+    display:grid; gap:18px;
+  }
+
+  /* Tarjetas */
+  section.card{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    box-shadow:var(--shadow);
+    padding:18px;
+  }
+  section.card h2{
+    margin:0 0 6px; color:#7a4f34; font-size:22px; font-weight:800;
+  }
+  section.card p.muted{margin:0 0 14px}
+
+  /* Formularios semánticos */
+  fieldset{border:1px dashed var(--line); border-radius:12px; padding:12px}
+  legend{color:#7a4f34; font-weight:800; font-size:14px; padding:0 6px}
+  label{font-weight:700; font-size:14px}
+  input, select, textarea{
+    width:100%; padding:10px 12px; border:1px solid var(--line); border-radius:10px; background:#fff; color:var(--text); font-size:15px;
+  }
+  input:focus,select:focus,textarea:focus{outline:none; border-color:#d1b08a; box-shadow:0 0 0 3px rgba(209,176,138,.25)}
+
+  .btn.primary{
+    background:#2c6975; color:#fff; font-weight:800; border-radius:10px; padding:10px 14px; border:0; cursor:pointer;
+  }
+  .btn.primary:hover{background:#20515a}
+  .btn.ok{background:var(--ok)}
+  .btn.ok:hover{filter:brightness(.95)}
+
+  .grid3{display:grid; gap:12px; grid-template-columns:repeat(3,1fr)}
+  .row{display:flex; gap:10px; align-items:center; flex-wrap:wrap}
+  .mt-8{margin-top:8px}
+  .mt-10{margin-top:10px}
+  .mt-12{margin-top:12px}
+  .mt-14{margin-top:14px}
+  .right{justify-content:flex-end}
+
+  /* Tabla */
+  table{width:100%; border-collapse:collapse; font-size:14px}
+  th,td{border-bottom:1px solid var(--line); padding:10px 6px; text-align:left}
+  th{color:#7a4f34; font-weight:800}
+  .msg{min-height:18px; font-weight:700; font-size:14px; color:var(--bad)}
+
+  /* Totales carrito */
+  .tot{font-size:18px; font-weight:900}
+
+  @media (max-width:960px){
+    main.wrap{grid-template-columns:1fr}
+    .grid3{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+
+<main class="wrap">
+  <!-- Lateral -->
+  <aside aria-label="Información del administrador">
+    <header>
+      <h1>Admin</h1>
+      <p class="muted">Kava</p>
+    </header>
+
+    <nav class="actions" aria-label="Acciones rápidas">
+      <button class="btn alt" type="button" onclick="location.href='admin.html'">← Volver</button>
+      <button class="btn bad" id="logout" type="button">Cerrar sesión</button>
+    </nav>
+
+    <hr class="split" />
+
+    <p class="muted">Usuario: <span id="who" class="tag">—</span></p>
+    <p class="muted">Rol: <span id="role" class="tag">—</span></p>
+  </aside>
+
+  <!-- Columna derecha como pila -->
+  <section class="stack" aria-label="Paneles de gestión">
+
+    <!-- Productos -->
+    <section class="card" aria-labelledby="prod-title">
+      <header>
+        <h2 id="prod-title">Productos</h2>
+        <p class="muted">Registrar un nuevo producto y listar el inventario.</p>
+      </header>
+
+      <form id="form-producto">
+        <fieldset>
+          <legend>Datos básicos</legend>
+          <section class="grid3">
+            <article>
+              <label for="p-nombre">Nombre</label>
+              <input id="p-nombre" name="Nombre" required>
+            </article>
+            <article>
+              <label for="p-precio">Precio</label>
+              <input id="p-precio" name="Precio" type="number" min="0" step="0.01" required>
+            </article>
+            <article>
+              <label for="p-stock">Stock</label>
+              <input id="p-stock" name="Stock" type="number" min="0" step="1" required>
+            </article>
+          </section>
+        </fieldset>
+
+        <fieldset class="mt-10">
+          <legend>Detalles</legend>
+          <section class="grid3">
+            <article>
+              <label for="p-talla">Talla</label>
+              <input id="p-talla" name="Talla">
+            </article>
+            <article>
+              <label for="p-color">Color</label>
+              <input id="p-color" name="Color">
+            </article>
+            <article>
+              <label for="p-desc">Descripción</label>
+              <input id="p-desc" name="Descripción" placeholder="Breve detalle">
+            </article>
+          </section>
+        </fieldset>
+
+        <section class="row mt-12" role="group" aria-label="Acciones producto">
+          <button class="btn primary" type="submit">Guardar producto</button>
+          <output id="msg-prod" class="msg" aria-live="polite"></output>
+        </section>
+      </form>
+
+      <section class="mt-14" aria-label="Tabla de productos">
+        <table id="tbl-prod">
+          <caption class="visually-hidden">Inventario de productos</caption>
+          <thead>
+            <tr>
+              <th>#</th><th>Nombre</th><th>Precio</th><th>Talla</th><th>Color</th><th>Stock</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </section>
+    </section>
+
+    <!-- Proveedores -->
+    <section class="card" aria-labelledby="prov-title">
+      <header>
+        <h2 id="prov-title">Proveedores</h2>
+        <p class="muted">Registrar y consultar proveedores.</p>
+      </header>
+
+      <form id="form-prov">
+        <fieldset>
+          <legend>Datos del proveedor</legend>
+          <section class="grid3">
+            <article>
+              <label for="pr-nombre">Nombre</label>
+              <input id="pr-nombre" name="Nombre" required>
+            </article>
+            <article>
+              <label for="pr-nit">NIT</label>
+              <input id="pr-nit" name="NIT" type="number" min="0" required>
+            </article>
+            <article>
+              <label for="pr-tel">Teléfono</label>
+              <input id="pr-tel" name="Telefono" type="number" min="0">
+            </article>
+          </section>
+          <section class="mt-8">
+            <label for="pr-dir">Dirección</label>
+            <input id="pr-dir" name="Dirección" required>
+          </section>
+        </fieldset>
+
+        <section class="row mt-12" role="group" aria-label="Acciones proveedor">
+          <button class="btn primary" type="submit">Guardar proveedor</button>
+          <output id="msg-prov" class="msg" aria-live="polite"></output>
+        </section>
+      </form>
+
+      <section class="mt-14" aria-label="Tabla de proveedores">
+        <table id="tbl-prov">
+          <caption class="visually-hidden">Listado de proveedores</caption>
+          <thead>
+            <tr>
+              <th>#</th><th>Nombre</th><th>NIT</th><th>Dirección</th><th>Teléfono</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </section>
+    </section>
+
+    <!-- Ventas -->
+    <section class="card" aria-labelledby="venta-title">
+      <header>
+        <h2 id="venta-title">Ventas</h2>
+        <p class="muted">Punto de venta simple: agrega ítems al carrito y guarda la venta.</p>
+      </header>
+
+      <section aria-label="Agregar ítems">
+        <section class="grid3">
+          <article>
+            <label for="sel-prod">Producto</label>
+            <select id="sel-prod"></select>
+          </article>
+          <article>
+            <label for="qty">Cantidad</label>
+            <input id="qty" type="number" value="1" min="1" step="1">
+          </article>
+          <article class="row" style="align-items:end">
+            <button class="btn primary" id="add-item" type="button" style="margin-top:22px">Agregar</button>
+          </article>
+        </section>
+      </section>
+
+      <section class="mt-12" aria-label="Carrito">
+        <table id="tbl-cart">
+          <caption class="visually-hidden">Detalle del carrito</caption>
+          <thead>
+            <tr>
+              <th>Producto</th><th>Precio</th><th>Cant.</th><th>Subtotal</th><th></th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+
+        <section class="row right mt-8" aria-label="Total">
+          <span class="tot">Total: $ <span id="total">0</span></span>
+        </section>
+
+        <section class="row mt-10" role="group" aria-label="Acciones de venta">
+          <button class="btn ok" id="save-sale" type="button">Guardar venta</button>
+          <button class="btn" style="background:#595959" id="clear-cart" type="button">Vaciar</button>
+          <output id="msg-venta" class="msg" aria-live="polite"></output>
+        </section>
+      </section>
+    </section>
+
+  </section>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  /* Guardia de sesión */
+  (function(){
+    const u   = JSON.parse(localStorage.getItem('usuario')||'null');
+    const rol = (localStorage.getItem('rol')||u?.Rol||'').toLowerCase();
+    document.getElementById('who').textContent  = u?.Nombre || '—';
+    document.getElementById('role').textContent = u?.Rol || (rol || '—');
+    document.getElementById('logout').onclick = () => {
+      localStorage.clear();
+      location.href='Login.html';
+    };
+    // Si quieres bloquear acceso:
+    // if(rol !== 'admin'){ location.href = 'Login.html'; }
+  })();
+
+  /* Supabase */
+  const sb = supabase.createClient(
+    "https://wdfxnrsshcpllgkynedo.supabase.co",
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndkZnhucnNzaGNwbGxna3luZWRvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIwODEyOTgsImV4cCI6MjA3NzY1NzI5OH0.maiNsWZ52NnMOQjCfZUbh3zwmNv2KgMxHCFP2ulssTo"
+  );
+
+  /* Helpers */
+  const $     = id => document.getElementById(id);
+  const money = n => Number(n||0).toLocaleString('es-CO');
+
+  /* ===== Productos ===== */
+  const formProd = $('form-producto');
+  const msgProd  = $('msg-prod');
+  const tblProd  = $('tbl-prod').querySelector('tbody');
+  const selProd  = $('sel-prod');
+
+  formProd.addEventListener('submit', async (e)=>{
+    e.preventDefault(); msgProd.textContent='';
+    const fd = new FormData(formProd);
+    const payload = {
+      Nombre: fd.get('Nombre'),
+      Descripción: fd.get('Descripción') || null,
+      Precio: Number(fd.get('Precio')),
+      Talla: fd.get('Talla') || null,
+      Color: fd.get('Color') || null,
+      Stock: Number(fd.get('Stock'))
+    };
+    try{
+      const { error } = await sb.from('Producto').insert(payload);
+      if(error) throw error;
+      msgProd.style.color = 'var(--ok)'; msgProd.textContent = '✅ Guardado';
+      formProd.reset(); loadProductos();
+    }catch(err){
+      msgProd.style.color = 'var(--bad)';
+      msgProd.textContent = `Error: ${err?.message || err}`;
+    }
+  });
+
+  async function loadProductos(){
+    tblProd.innerHTML = '';
+    selProd.innerHTML = '';
+    try{
+      const { data, error } = await sb.from('Producto').select('*').order('id',{ascending:true});
+      if(error) throw error;
+      (data||[]).forEach(p=>{
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${p.id}</td>
+          <td>${p.Nombre||''}</td>
+          <td>$ ${money(p.Precio)}</td>
+          <td>${p.Talla||'-'}</td>
+          <td>${p.Color||'-'}</td>
+          <td>${p.Stock ?? 0}</td>`;
+        tblProd.appendChild(tr);
+
+        const opt = document.createElement('option');
+        opt.value = JSON.stringify({id:p.id,Nombre:p.Nombre,Precio:p.Precio,Stock:p.Stock??0});
+        opt.textContent = `${p.Nombre} — $${money(p.Precio)} (Disp: ${p.Stock??0})`;
+        selProd.appendChild(opt);
+      });
+      if(!data || data.length===0){
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td colspan="6" style="color:var(--muted)">Sin productos</td>`;
+        tblProd.appendChild(tr);
+      }
+    }catch(err){
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td colspan="6">Error: ${err?.message || 'Failed to fetch'}</td>`;
+      tblProd.appendChild(tr);
+    }
+  }
+
+  /* ===== Proveedores ===== */
+  const formProv = $('form-prov');
+  const msgProv  = $('msg-prov');
+  const tblProv  = $('tbl-prov').querySelector('tbody');
+
+  formProv.addEventListener('submit', async (e)=>{
+    e.preventDefault(); msgProv.textContent='';
+    const fd = new FormData(formProv);
+    const payload = {
+      Nombre: fd.get('Nombre'),
+      NIT: Number(fd.get('NIT')),
+      Dirección: fd.get('Dirección'),
+      Telefono: fd.get('Telefono') ? Number(fd.get('Telefono')) : null
+    };
+    try{
+      const { error } = await sb.from('Proveedores').insert(payload);
+      if(error) throw error;
+      msgProv.style.color = 'var(--ok)'; msgProv.textContent='✅ Guardado';
+      formProv.reset(); loadProveedores();
+    }catch(err){
+      msgProv.style.color = 'var(--bad)';
+      msgProv.textContent = `Error: ${err?.message || 'Failed to fetch'}`;
+    }
+  });
+
+  async function loadProveedores(){
+    tblProv.innerHTML = '';
+    try{
+      const { data, error } = await sb.from('Proveedores').select('*').order('id',{ascending:true});
+      if(error) throw error;
+      (data||[]).forEach(p=>{
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td>${p.id}</td><td>${p.Nombre}</td><td>${p.NIT}</td><td>${p.Dirección||''}</td><td>${p.Telefono||''}</td>`;
+        tblProv.appendChild(tr);
+      });
+      if(!data || data.length===0){
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td colspan="5" style="color:var(--muted)">Sin proveedores</td>`;
+        tblProv.appendChild(tr);
+      }
+    }catch(err){
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td colspan="5">Error: ${err?.message || 'Failed to fetch'}</td>`;
+      tblProv.appendChild(tr);
+    }
+  }
+
+  /* ===== Ventas / Carrito ===== */
+  const cartTbody = $('tbl-cart').querySelector('tbody');
+  const qtyInput  = $('qty');
+  const totalSpan = $('total');
+  const msgVenta  = $('msg-venta');
+  let cart = [];
+
+  function renderCart(){
+    cartTbody.innerHTML = '';
+    let tot = 0;
+    cart.forEach((it, i)=>{
+      const sub = Number(it.precio)*Number(it.qty); tot += sub;
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${it.nombre}</td>
+        <td>$ ${money(it.precio)}</td>
+        <td>${it.qty}</td>
+        <td>$ ${money(sub)}</td>
+        <td><button class="btn bad" type="button" onclick="removeItem(${i})">X</button></td>`;
+      cartTbody.appendChild(tr);
+    });
+    if(cart.length===0){
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td colspan="5" style="color:var(--muted)">Sin items</td>`;
+      cartTbody.appendChild(tr);
+    }
+    totalSpan.textContent = money(tot);
+  }
+  window.removeItem = i => { cart.splice(i,1); renderCart(); };
+
+  $('add-item').onclick = ()=>{
+    msgVenta.textContent = '';
+    const sel = selProd.value ? JSON.parse(selProd.value) : null;
+    const qty = Number(qtyInput.value||1);
+    if(!sel){ msgVenta.textContent='Selecciona un producto.'; return; }
+    if(qty<1){ msgVenta.textContent='Cantidad inválida.'; return; }
+    if(qty>sel.Stock){ msgVenta.textContent='No hay stock suficiente.'; return; }
+
+    const idx = cart.findIndex(x=>x.id===sel.id);
+    if(idx>=0){
+      const newQty = cart[idx].qty + qty;
+      if(newQty > sel.Stock){ msgVenta.textContent='Excede el stock.'; return; }
+      cart[idx].qty = newQty;
+    }else{
+      cart.push({id:sel.id,nombre:sel.Nombre,precio:Number(sel.Precio),qty,stock:sel.Stock});
+    }
+    renderCart();
+  };
+  $('clear-cart').onclick = ()=>{ cart=[]; renderCart(); };
+
+  async function insertDetalle(table, rows){
+    try{ const { error } = await sb.from(table).insert(rows); if(error) throw error; return true; }
+    catch{ return false; }
+  }
+
+  $('save-sale').onclick = async ()=>{
+    msgVenta.textContent='';
+    if(cart.length===0){ msgVenta.textContent='Carrito vacío.'; return; }
+    const total = cart.reduce((a,b)=>a + b.precio*b.qty, 0);
+
+    try{
+      const { data:venta, error:errVenta } = await sb.from('Venta')
+        .insert({ Total: total, created_at:new Date().toISOString() })
+        .select('id').single();
+      if(errVenta) throw errVenta;
+      const ventaId = venta?.id;
+
+      const detailRows = cart.map(it=>({
+        VentaId:ventaId||null, ProductoId:it.id, Cantidad:it.qty,
+        PrecioUnitario:it.precio, Subtotal:it.precio*it.qty
+      }));
+      const ok = await insertDetalle('Detalle Venta',detailRows)
+            || await insertDetalle('Detalle_Venta',detailRows)
+            || await insertDetalle('DetalleVenta',detailRows);
+
+      for(const it of cart){
+        await sb.from('Producto').update({ Stock:(it.stock - it.qty) }).eq('id', it.id);
+      }
+
+      msgVenta.style.color = ok ? 'var(--ok)' : 'var(--bad)';
+      msgVenta.textContent = ok
+        ? '✅ Venta guardada'
+        : '⚠️ Venta guardada, pero faltaron detalles (revisa el nombre exacto de la tabla Detalle).';
+      cart=[]; renderCart(); loadProductos();
+    }catch(err){
+      msgVenta.style.color='var(--bad)';
+      msgVenta.textContent = `Error: ${err?.message || 'Failed to fetch'}`;
+    }
+  };
+
+  (async function init(){
+    renderCart();
+    await loadProductos();
+    await loadProveedores();
+  })();
+</script>
+</body>
+</html>

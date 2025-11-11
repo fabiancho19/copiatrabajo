@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Carrito — KAVA</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&display=swap" rel="stylesheet">
+  <style>
+    :root{ --bg:#000; --card:#111; --muted:#bbb; --line:#222; --accent:#fff; --pill:#222; }
+    *{ box-sizing:border-box }
+    body{
+      margin:0; font-family:"Cormorant Garamond", serif;
+      background:var(--bg); color:#ffffff;
+      min-height:100svh; display:grid; grid-template-rows:auto 1fr auto;
+    }
+    header, footer{ padding:20px; border-bottom:1px solid var(--line) }
+    footer{ border-top:1px solid var(--line); border-bottom:none; }
+    h1{ margin:0; letter-spacing:.18em; font-weight:600 }
+    main{ max-width:1000px; margin:0 auto; width:100%; padding:20px }
+    .empty{ color:var(--muted); text-align:center; margin:14vh 0; font-size:clamp(18px,2.6vw,22px) }
+
+    .cart{
+      display:grid; gap:16px;
+      grid-template-columns: 1fr 360px;
+    }
+    @media (max-width: 900px){ .cart{ grid-template-columns: 1fr } }
+
+    .item{
+      display:grid; grid-template-columns: 96px 1fr auto; gap:14px; align-items:center;
+      padding:12px; background:var(--card); border:1px solid var(--line); border-radius:14px;
+    }
+    .item img{ width:96px; height:96px; object-fit:cover; border-radius:10px; filter:grayscale(100%) }
+    .name{ font-size:20px; letter-spacing:.04em; margin:0 0 6px }
+    .meta{ color:var(--muted); font-size:14px }
+    .qty{
+      display:inline-flex; align-items:center; gap:8px; background:var(--pill);
+      border:1px solid var(--line); border-radius:999px; padding:4px 8px;
+    }
+    .qty button{
+      background:transparent; color:#fff; border:1px solid #444; border-radius:999px;
+      inline-size:28px; block-size:28px; cursor:pointer;
+    }
+    .price{ font-weight:600; letter-spacing:.04em }
+    .remove{
+      background:transparent; color:#fff; border:1px solid #444; border-radius:999px;
+      padding:6px 10px; cursor:pointer;
+    }
+
+    .resume{
+      position:sticky; top:16px; display:grid; gap:12px;
+      padding:16px; background:var(--card); border:1px solid var(--line); border-radius:14px;
+      height:max-content;
+    }
+    .row{ display:flex; justify-content:space-between; align-items:center; color:#ddd }
+    .total{ font-size:22px; font-weight:600; color:#ffffff }
+    .pay{
+      background:#fff; color:#000; border:none; border-radius:999px; padding:10px 16px;
+      cursor:pointer; font-weight:600; letter-spacing:.04em;
+    }
+    .muted{ color:var(--muted) }
+    hr{ border:none; border-top:1px solid var(--line); margin:6px 0 }
+  </style>
+</head>
+<body>
+  <header>
+   <header style="
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:20px;
+  border-bottom:1px solid var(--line);
+">
+  <a href="index.html" style="
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    padding:10px 18px;
+    border-radius:999px;
+    background:#ffffff;
+    color:#000000;
+    font-family:'Cormorant Garamond', serif;
+    font-size:18px;
+    font-weight:600;
+    text-decoration:none;
+    letter-spacing:.04em;
+    border:1px solid #ccc;
+    transition:.25s;
+  " onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='0 0 14px rgba(255,255,255,.45)';"
+     onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='none';">
+
+    ← Volver a la tienda
+  </a>
+
+  <h1 style="margin:0; letter-spacing:.18em; font-weight:600; font-size:clamp(20px,4vw,32px); text-transform:uppercase;">
+    Luxury Store — KAVA
+  </h1>
+</header>
+
+  </header>
+
+  <main>
+    <section id="mount"></section>
+  </main>
+
+  <footer class="muted">
+    © <span id="year"></span> KAVA — Carrito virtual.
+  </footer>
+
+  <script>
+    document.addEventListener('click', (e) => {
+  const btn = e.target.closest('.add-cart');
+  if (!btn) return;
+
+  const id = btn.dataset.id;
+  const nombre = btn.dataset.nombre;
+  Number(btn.datasconst.precio = et.precio);
+  const imagen = btn.dataset.imagen || '';
+  const color = btn.dataset.color || '';
+
+  const cart = readCart();
+  const i = cart.findIndex(p => p.id === id);
+
+  if (i >= 0) cart[i].qty += 1;
+  else cart.push({ id, nombre, precio, qty: 1, imagen, color });
+  
+  writeCart(cart);
+  toast(`${nombre} añadido al carrito `);
+});
+
+    const money = n => new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(n);
+    const CART_KEY = 'kava_cart';
+    const readCart = () => {
+      try { return JSON.parse(localStorage.getItem(CART_KEY) || '[]'); }
+      catch { return []; }
+    };
+    const writeCart = (c) => localStorage.setItem(CART_KEY, JSON.stringify(c));
+
+    const mount = document.getElementById('mount');
+
+    function render(){
+      const cart = readCart();
+      if (!cart.length){
+        mount.innerHTML = '<p class="empty">Tu carrito está vacío.</p>';
+        return;
+      }
+
+      const list = document.createElement('div');
+      list.className = 'list';
+      list.style.display = 'grid';
+      list.style.gap = '12px';
+
+      let subtotal = 0;
+
+      cart.forEach((it, idx) => {
+        subtotal += (it.precio * it.qty);
+
+        const row = document.createElement('article');
+        row.className = 'item';
+
+        const img = document.createElement('img');
+        img.src = it.imagen || '';
+        img.alt = it.nombre;
+
+        const info = document.createElement('div');
+        const name = document.createElement('h3');
+        name.className = 'name';
+        name.textContent = it.nombre;
+
+        const meta = document.createElement('div');
+        meta.className = 'meta';
+        meta.textContent = 'Color: ' + (it.color || '—');
+
+        const controls = document.createElement('div');
+        controls.className = 'qty';
+        const minus = document.createElement('button'); minus.textContent = '−';
+        const count = document.createElement('span'); count.textContent = it.qty;
+        const plus = document.createElement('button'); plus.textContent = '+';
+
+        minus.addEventListener('click', () => {
+          const c = readCart();
+          if (c[idx].qty > 1) c[idx].qty -= 1; else c.splice(idx,1);
+          writeCart(c); render();
+        });
+        plus.addEventListener('click', () => {
+          const c = readCart(); c[idx].qty += 1; writeCart(c); render();
+        });
+
+        controls.append(minus, count, plus);
+
+        const right = document.createElement('div');
+        right.style.display = 'grid';
+        right.style.justifyItems = 'end';
+        right.style.gap = '8px';
+
+        const price = document.createElement('div');
+        price.className = 'price';
+        price.textContent = money(it.precio * it.qty);
+
+        const remove = document.createElement('button');
+        remove.className = 'remove';
+        remove.textContent = 'Quitar';
+        remove.addEventListener('click', () => {
+          const c = readCart(); c.splice(idx,1); writeCart(c); render();
+        });
+
+        info.append(name, meta, controls);
+        right.append(price, remove);
+        row.append(img, info, right);
+        list.append(row);
+      });
+
+      const resume = document.createElement('aside');
+      resume.className = 'resume';
+
+      const r1 = document.createElement('div'); r1.className = 'row';
+      r1.innerHTML = `<span>Subtotal</span><span>${money(subtotal)}</span>`;
+
+      const r2 = document.createElement('div'); r2.className = 'row';
+      r2.innerHTML = `<span>Envío</span><span>Se calcula al finalizar</span>`;
+
+      const hr = document.createElement('hr');
+
+      const r3 = document.createElement('div'); r3.className = 'row total';
+      r3.innerHTML = `<span>Total</span><span>${money(subtotal)}</span>`;
+
+      const pay = document.createElement('a');
+pay.className = 'pay';
+pay.textContent = 'Finalizar compra';
+pay.href = 'checkout.html';   
+pay.target = '_blank';        
+pay.rel = 'noopener';         
+pay.style.textDecoration = 'none'; 
+
+      const grid = document.createElement('div');
+      grid.className = 'cart';
+      grid.append(list, resume);
+
+      resume.append(r1, r2, hr, r3, pay);
+
+      mount.innerHTML = '';
+      mount.append(grid);
+    }
+
+    render();
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>

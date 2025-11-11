@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login - Kava</title>
+
+  <style>
+  :root{
+    --bg:#000;           /* Fondo principal */
+    --panel:#f4f2ee;     /* Caja clara elegante */
+    --text:#2c2c2c;      /* Texto suave */
+    --line:#dcdcdc;      /* Líneas y bordes */
+    --gold:#C1A875;      /* Dorado KAVA (accent principal) */
+    --cyan:#000000;      /* Secundario sofisticado */
+    --muted:#bbb;        /* Texto apagado */
+  }
+
+  body{
+    margin:0;
+    font-family:"Cormorant Garamond", serif;
+    display:flex;justify-content:center;align-items:center;
+    min-height:100vh;background:var(--bg);color:var(--text);
+  }
+
+  main{
+    width:360px;background:var(--panel);
+    border:2px solid var(--gold);border-radius:14px;
+    box-shadow:0 8px 35px rgba(0,0,0,.45);
+    padding:40px 36px;
+  }
+
+  header h1{
+    margin:0 0 24px;text-align:center;
+    color:var(--gold);font-weight:700;font-size:30px;
+    letter-spacing:.05em;
+  }
+
+  section.field{
+    position:relative;margin-bottom:20px;
+  }
+
+  section.field input{
+    width:100%;padding:12px;border-radius:8px;
+    border:1px solid var(--line);background:#fff;
+    font-size:15px;color:var(--text);
+    transition:border .2s,box-shadow .2s;
+  }
+
+  section.field input:focus{
+    border-color:var(--gold);outline:none;
+    box-shadow:0 0 0 3px rgba(193,168,117,.25);
+  }
+
+  section.field label{
+    position:absolute;left:12px;top:12px;
+    font-size:14px;color:var(--muted);
+    pointer-events:none;transition:.2s;
+  }
+
+  section.field input:focus+label,
+  section.field input:not(:placeholder-shown)+label{
+    top:-8px;left:8px;font-size:12px;
+    background:var(--panel);padding:0 5px;
+    color:var(--gold);font-weight:600;
+  }
+
+  button{
+    width:100%;padding:12px;border:none;border-radius:8px;
+    background:var(--cyan);color:#fff;font-weight:800;
+    cursor:pointer;transition:.25s;margin-top:6px;
+  }
+
+  button:hover{background:var(--gold);transform:translateY(-2px)}
+  button:disabled{opacity:.6;cursor:not-allowed}
+
+  p.msg{
+    margin-top:8px;min-height:18px;text-align:center;font-weight:700;
+  }
+
+  footer a{
+    display:block;margin-top:14px;text-align:center;
+    color:var(--cyan);text-decoration:none;font-weight:700;
+  }
+
+  footer a:hover{text-decoration:underline}
+</style>
+
+</head>
+
+<body>
+  <main>
+    <header>
+      <h1>Iniciar sesión</h1>
+    </header>
+
+    <form id="form-login" autocomplete="off">
+      <section class="field">
+        <input type="email" name="correo" placeholder=" " required />
+        <label>Correo electrónico</label>
+      </section>
+
+      <section class="field">
+        <input type="password" name="password" placeholder=" " required />
+        <label>Contraseña</label>
+      </section>
+
+      <button id="btn-login" type="submit">Ingresar</button>
+      <p id="msg" class="msg"></p>
+    </form>
+
+    <footer>
+      <a href="Registro.html">¿No tienes cuenta? Regístrate</a>
+      <a href="index.html"> Volver</a>
+    </footer>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    const sb = supabase.createClient(
+      "https://wdfxnrsshcpllgkynedo.supabase.co",
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndkZnhucnNzaGNwbGxna3luZWRvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIwODEyOTgsImV4cCI6MjA3NzY1NzI5OH0.maiNsWZ52NnMOQjCfZUbh3zwmNv2KgMxHCFP2ulssTo"
+    );
+
+    const form = document.getElementById("form-login");
+    const btn  = document.getElementById("btn-login");
+    const msg  = document.getElementById("msg");
+
+    form.addEventListener("submit", async (e)=>{
+      e.preventDefault();
+      msg.textContent = "";
+      btn.disabled = true;
+
+      try{
+        const fd = new FormData(form);
+        const email = fd.get("correo").trim();
+        const pass  = fd.get("password");
+
+        const { data, error } = await sb
+          .from("Cliente")
+          .select("Nombre, Rol, correo_electronico")
+          .eq("correo_electronico", email)
+          .eq("Contraseña", pass)
+          .maybeSingle();
+
+        if(error || !data){
+          msg.style.color = "#b00020";
+          msg.textContent = "❌ Correo o contraseña incorrectos";
+          return;
+        }
+
+        localStorage.setItem("usuario", JSON.stringify(data));
+        localStorage.setItem("rol", data.Rol || "cliente");
+
+        msg.style.color = "green";
+        msg.textContent = "✅ Bienvenido " + data.Nombre;
+
+        setTimeout(()=>{
+          if((data.Rol||"").toLowerCase()==="admin"){
+            location.href = "admin.html";
+          }else{
+            location.href = "index.html";
+          }
+        }, 700);
+
+      }catch(err){
+        console.error(err);
+        msg.style.color = "#b00020";
+        msg.textContent = "❌ Error inesperado.";
+      }finally{
+        btn.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>

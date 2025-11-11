@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>KAVA</title>
+  <link rel="stylesheet" href="stilos.css">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+  <section id="modal-privacidad">
+    <article class="modal-box">
+      <header class="modal-header">
+        <h2>Política de Privacidad</h2>
+      </header>
+      <section class="modal-body">
+        <p><strong>Última actualización: 4 de noviembre de 2025</strong></p>
+        
+        <p>En Kava, nos comprometemos a proteger tu privacidad y garantizar la seguridad de tus datos personales.</p>
+
+        <h3>Información que Recopilamos</h3>
+        <ul>
+          <li>Datos de contacto: nombre, correo electrónico, teléfono</li>
+          <li>Datos de envío: dirección postal completa</li>
+          <li>Información de pago: datos de tarjetas (procesados de forma segura)</li>
+          <li>Datos de navegación: IP, navegador, páginas visitadas</li>
+          <li>Cookies para mejorar tu experiencia</li>
+        </ul>
+
+        <h3>Cómo Utilizamos tu Información</h3>
+        <ul>
+          <li>Procesar pedidos y envíos</li>
+          <li>Enviar confirmaciones y actualizaciones</li>
+          <li>Personalizar tu experiencia de compra</li>
+          <li>Enviar ofertas y promociones (puedes darte de baja)</li>
+          <li>Prevenir fraudes y proteger la seguridad</li>
+        </ul>
+
+        <h3>Tus Derechos</h3>
+        <p>Tienes derecho a acceder, rectificar, eliminar y controlar el uso de tus datos personales. Contáctanos en <strong>privacidad@kava.com</strong></p>
+
+        <h3>Seguridad</h3>
+        <p>Implementamos medidas de seguridad técnicas y físicas para proteger tu información, incluyendo cifrado SSL/TLS.</p>
+
+        <p style="margin-top: 20px;">Al hacer clic en "Aceptar", confirmas que has leído y aceptas nuestra Política de Privacidad.</p>
+      </section>
+      <footer class="modal-footer">
+        <button class="btn-modal btn-rechazar" onclick="rechazarPrivacidad()">Rechazar</button>
+        <button class="btn-modal btn-aceptar" onclick="aceptarPrivacidad()">Aceptar</button>
+      </footer>
+    </article>
+  </section>
+  <header id="mini-header" aria-label="Cabecera">
+    <details id="menu-hamb">
+      <summary id="hamburger" aria-label="Abrir menú">☰</summary>
+      <nav id="nav" aria-label="Navegación principal">
+        <ul role="list">
+          <li><a href="#app">Inicio</a></li>
+          <li><a href="#novedades">Novedades</a></li>
+          <li><a href="Registro.html">Iniciar sesion</a></li>
+          <li><a href="#hombres">Hombres</a></li>
+          <li><a href="#mujeres">Mujeres</a></li>
+          <li><a href="#contacto">Contactanos</a></li>
+        </ul>
+      </nav>
+    </details>
+    <span class="brand">KAVA</span>
+    <a id="carrito-link" class="cart-link" href="carrito.html" target="_blank" aria-label="Abrir carrito" title="Carrito">🛒</a>
+    <form id="buscador-form" role="search" aria-label="Buscar productos" action="#novedades">
+      <label for="buscador" hidden>Buscar</label>
+      <input id="buscador" name="q" type="search" placeholder="Buscar…" autocomplete="off" />
+    </form>
+  </header>
+  <main id="app"></main>
+  
+  <section id="hombres" aria-label="Editorial Hombres" class="editorial">
+  <h2>Hombres</h2>
+
+
+  <figure class="ed-hero">
+    <img src="imagenes/modelorev.png" alt="Editorial Hombres — KAVA" loading="lazy">
+    <figcaption>
+      <strong>Urban Classic</strong>
+      <a href="#hombres" class="ed-btn">Ver colección</a>
+    </figcaption>
+  </figure>
+
+  <section class="ed-grid" aria-label="Galería editorial hombres">
+    <figure class="span-2">
+      <img src="imagenes/modelooverbasicah.png" alt="Oversize basica" loading="lazy">
+      <figcaption>Oversize basica</figcaption>
+    </figure>
+
+    <figure>
+      <img src="imagenes/deniomclas.png" alt="Denim clásico" loading="lazy" >
+      <figcaption>Denim clásico</figcaption>
+    </figure>
+
+    <figure>
+      <img src="imagenes/hoodieminifinal.png" alt="Hoodie minimal" loading="lazy">
+      <figcaption>Hoodie minimal</figcaption>
+    </figure>
+
+    <figure class="span-2h">
+      <img src="imagenes/cargobe.png" alt="Cargo beige" loading="lazy">
+      <figcaption>Cargo beige</figcaption>
+    </figure>
+
+    <figure>
+      <img src="imagenes/tennis.png" alt="Zapatillas blancas" loading="lazy">
+      <figcaption>Zapatillas blancas</figcaption>
+    </figure>
+  </section>
+</section>
+
+<section id="mujeres" aria-label="Editorial Mujeres" class="editorial">
+  <h2>Mujeres</h2>
+
+  <figure class="ed-hero">
+    <img src="imagenes/modeleje1.jpg" alt="Editorial Mujeres — KAVA" loading="lazy">
+    <figcaption>
+      <strong>Essential Fem</strong>
+      <a href="#mujeres" class="ed-btn">Ver colección</a>
+    </figcaption>
+  </figure>
+
+  <section class="ed-grid" aria-label="Galería editorial mujeres">
+    <figure class="span-2h">
+      <img src="imagenes/modeloblusa.jpg" alt="Blusa elegante" loading="lazy">
+      <figcaption>Blusa elegante</figcaption>
+    </figure>
+
+    <figure>
+      <img src="imagenes/modeldennnnlarge.png" alt="Denim alto" loading="lazy">
+      <figcaption>Denim alto</figcaption>
+    </figure>
+
+    <figure>
+      <img src="imagenes/modelohoom.png" alt="Hoodie beige" loading="lazy">
+      <figcaption>Hoodie beige</figcaption>
+    </figure>
+
+    <figure class="span-2">
+      <img src="imagenes/midif.png" alt="Vestido midi" loading="lazy">
+      <figcaption>Vestido midi</figcaption>
+    </figure>
+
+    <figure>
+      <img src="imagenes/crropm.png" alt="Cropped " loading="lazy">
+      <figcaption>Cropped </figcaption>
+    </figure>
+  </section>
+</section>
+<section id="novedades" aria-labelledby="titulo-novedades">
+<!-- NOVEDADES FALTA POR COMPLETAR-->
+ <h2 id="titulo-novedades">Novedades</h2>
+  <article class="productos">
+<section class="contenedor-productos">
+    
+    <article class="producto">
+      <hgroup>
+        <h3>Bermuda caqui</h3>
+      </hgroup>
+      <figure class="zoom-wrap">
+        <img src="imagenes/bermudafin.png" alt="Bermuda caqui" width="250">
+      </figure>
+      <p class="price"><h3>$120.000 COP</h3></p>
+      <button class="add-cart"
+        data-id="bermuda-caqui"
+        data-nombre="Bermuda caqui"
+        data-precio="120000.00"
+        data-imagen="imagenes/bermudafin.png"
+        data-color="Caqui">
+        Añadir al carrito
+      </button>
+    </article>
+        <article class="producto">
+      <hgroup>
+        <h3>Bermuda Negra</h3>
+      </hgroup>
+      <figure class="zoom-wrap">
+        <img src="imagenes/bermudanegra.png.png" alt="Bermuda Negra width="250">
+      </figure>
+      <p class="price"><h3>$120.000 COP</h3></p>
+      <button class="add-cart"
+        data-id="bermuda-negra"
+        data-nombre="Bermuda Negra"
+        data-precio="120000.00"
+        data-imagen="imagenes/bermudanegra.png.png"
+        data-color="negro">
+        Añadir al carrito
+      </button>
+    </article>
+    <article class="producto">
+      <hgroup>
+        <h3>Bermuda caqui</h3>
+      </hgroup>
+      <figure class="zoom-wrap">
+        <img src="imagenes/bermudaroja.png" alt="Bermuda roja" width="250">
+      </figure>
+      <p class="price"><h3>$120.000 COP</h3></p>
+      <button class="add-cart"
+        data-id="bermuda-roja"
+        data-nombre="Bermuda roja"
+        data-precio="120000.00"
+        data-imagen="imagenes/bermudaroja.png"
+        data-color="Rojo">
+        Añadir al carrito
+      </button>
+    </article>
+    <article class="producto">
+      <hgroup>
+        <h3>Camisa Oversize Blanca</h3>
+      </hgroup>
+      <figure class="zoom-wrap">
+        <img src="imagenes/camisaoverblan.png" alt="Camisa Blanca Oversize" width="250">
+      </figure>
+      <p class="price"><h3>$100.000 COP</h3></p>
+      <button class="add-cart"
+        data-id="Camisa-Oversize-Blanca"
+        data-nombre="Camisa Oversize Blanca"
+        data-precio="100000.00"
+        data-imagen="imagenes/camisaoverblan.png"
+        data-color="Blanca">
+        Añadir al carrito
+      </button>
+    </article>
+    <article class="producto">
+      <hgroup>
+        <h3>Camisa Oversize Negra</h3>
+      </hgroup>
+      <figure class="zoom-wrap">
+        <img src="imagenes/overnegra.png" alt="Camisa Oversize Negra" width="250">
+      </figure>
+      <p class="price"><h3>$100.000 COP</h3></p>
+      <button class="add-cart"
+        data-id="Camisa-Oversize-Negra"
+        data-nombre="Camisa Oversize Negra"
+        data-precio="100000.00"
+        data-imagen="imagenes/overnegra.png"
+        data-color="negro">
+        Añadir al carrito
+      </button>
+    </article>
+    <article class="producto">
+      <hgroup>
+        <h3>Camisa Oversize Blanca de mujer</h3>
+      </hgroup>
+      <figure class="zoom-wrap">
+        <img src="imagenes/overmujerbla.png" alt="Camisa Blanca mujeres" width="250">
+      </figure>
+      <p class="price"><h3>$90.000 COP</h3></p>
+      <button class="add-cart"
+        data-id="Camisa-Oversize-Blanca-de-mujer"
+        data-nombre="Camisa Oversize Blanca de mujer"
+        data-precio="90000.00"
+        data-imagen="imagenes/overmujerbla.png"
+        data-color="Blanca">
+        Añadir al carrito
+      </button>
+    </article>
+    <article class="producto">
+      <hgroup>
+        <h3>Camisa Oversize Rosada de mujer</h3>
+      </hgroup>
+      <figure class="zoom-wrap">
+        <img src="imagenes/overmujrosa.png" alt="" width="250">
+      </figure>
+      <p class="price"><h3>$90.000 COP</h3></p>
+      <button class="add-cart"
+        data-id="Camisa-Oversize-Rosada-de-mujer"
+        data-nombre="Camisa Oversize Rosada de mujer"
+        data-precio="90000"
+        data-imagen="imagenes/overmujrosa.png"
+        data-color="Rosada">
+        Añadir al carrito
+      </button>
+    </article>
+    <article class="producto">
+      <hgroup>
+        <h3>saco Blanco elegante (linea Premium)</h3>
+      </hgroup>
+      <figure class="zoom-wrap">
+        <img src="imagenes/blazerfull.jpg" alt="saco Blanco elegante" width="250">
+      </figure>
+      <p class="price"><h3>$1.120.000 COP</h3></p>
+      <button class="add-cart"
+        data-id="saco-Blanco-elegante"
+        data-nombre="saco Blanco elegante"
+        data-precio="1120000"
+        data-imagen="imagenes/blazerfull.jpg"
+        data-color="Blanco">
+        Añadir al carrito
+      </button>
+    </article>
+    <article class="producto">
+      <hgroup>
+        <h3>Blusa elegante Satinada</h3>
+      </hgroup>
+      <figure class="zoom-wrap">
+        <img src="imagenes/blusaelegamuj.jpg" alt="Blusa elegante Satinada" width="250">
+      </figure>
+      <p class="price"><h3>$165.000 COP</h3></p>
+      <button class="add-cart"
+        data-id="Blusa-elegante-Satinada"
+        data-nombre="Blusa elegante Satinada"
+        data-precio="165000"
+        data-imagen="imagenes/blusaelegamuj.jpg"
+        data-color="Caqui">
+        Añadir al carrito
+      </button>
+    </article>
+    <article class="producto">
+      <hgroup>
+        <h3>Buzo Regular Fit hombre</h3>
+      </hgroup>
+      <figure class="zoom-wrap">
+        <img src="imagenes/buzoregularfit.jpg" alt="Buzo Regular Fit hombre" width="250">
+      </figure>
+      <p class="price"><h3>$200.000 COP</h3></p>
+      <button class="add-cart"
+        data-id="Buzo-Regular-Fit-hombre"
+        data-nombre="Buzo Regular Fit hombre"
+        data-precio="200000"
+        data-imagen="imagenes/buzoregularfit.jpg"
+        data-color="Blanco">
+        Añadir al carrito
+      </button>
+    </article>
+    <article class="producto">
+      <hgroup>
+        <h3>Jeans Cargo Para dama</h3>
+      </hgroup>
+      <figure class="zoom-wrap">
+        <img src="imagenes/jeancargodama.jpg" alt="Jeans Cargo Para dama" width="250">
+      </figure>
+      <p class="price"><h3>$160.000 COP</h3></p>
+      <button class="add-cart"
+        data-id="Jeans-Cargo-Para-dama"
+        data-nombre="Jeans Cargo Para dama"
+        data-precio="160000"
+        data-imagen="imagenes/jeancargodama.jpg"
+        data-color="Classic">
+        Añadir al carrito
+      </button>
+    </article>
+    <article class="producto">
+      <hgroup>
+        <h3>jean cargo hombre</h3>
+      </hgroup>
+      <figure class="zoom-wrap">
+        <img src="imagenes/jeancargoh.png" alt="jean cargo hombre" width="250">
+      </figure>
+      <p class="price"><h3>$160.000 COP</h3></p>
+      <button class="add-cart"
+        data-id="jean-cargo-hombre"
+        data-nombre="jean cargo hombre"
+        data-precio="160000"
+        data-imagen="imagenes/jeancargoh.png"
+        data-color="Classic">
+        Añadir al carrito.
+      </button>
+    </article>
+</section>
+  <script src="funciones.js"></script>
+</body>
+</html>
