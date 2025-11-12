@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Perfil — KAVA</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+  :root{ --bg:#1e1e1e; --panel:#f4f2ee; --line:#ddd; --accent:#C1A875; --text:#2b2b2b; }
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:var(--bg); min-height:100vh;
+    display:grid; place-items:center; font-family:"Cormorant Garamond",serif;
+  }
+  main{
+    width:min(720px, 92vw);
+    background:var(--panel); border:2px solid var(--accent); border-radius:16px;
+    box-shadow:0 10px 28px rgba(0,0,0,.25); padding:24px;
+    color:var(--text);
+  }
+  h1{ margin:0 0 10px; letter-spacing:.08em }
+  p.muted{ margin:0 0 16px; color:#6b7280; font-family:system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
+  form{ display:grid; gap:14px; }
+  fieldset{ border:1px dashed var(--line); border-radius:12px; padding:14px }
+  legend{ color:#7a4f34; font-weight:800; font-size:14px; padding:0 6px; }
+  label{ font-weight:700; font-size:14px; display:block; margin-bottom:6px }
+  input, textarea{
+    width:100%; padding:10px 12px; border:1px solid var(--line); border-radius:10px;
+    background:#fff; color:#111; font-size:15px; font-family:system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  }
+  .row{ display:grid; gap:12px; grid-template-columns:1fr 1fr }
+  .btn{
+    background:#000; color:#fff; border:0; border-radius:10px; padding:12px 16px; cursor:pointer;
+    font-weight:800;
+  }
+  .btn:hover{ filter:brightness(.92) }
+  .right{ display:flex; justify-content:flex-end; gap:10px; }
+  .avatar{
+    display:flex; gap:14px; align-items:center;
+  }
+  .avatar img{
+    width:90px; height:90px; border-radius:50%; object-fit:cover; border:2px solid #111;
+    background:#eee;
+  }
+  .msg{ min-height:18px; font-weight:700; }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>Perfil</h1>
+    <p class="muted">Completa o actualiza tu información personal.</p>
+  </header>
+
+  <form id="form-perfil" autocomplete="off">
+    <fieldset>
+      <legend>Foto</legend>
+      <div class="avatar">
+        <img id="foto-preview" alt="Foto de perfil"/>
+        <div>
+          <input type="file" id="foto" accept="image/*"/>
+          <small>Inserte La Imagen</small>
+        </div>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Datos personales</legend>
+      <div class="row">
+        <div>
+          <label for="nombre">Nombre completo</label>
+          <input id="nombre" name="Nombre"/>
+        </div>
+        <div>
+          <label for="cedula">Cédula</label>
+          <input id="cedula" name="Cedula" inputmode="numeric" pattern="[0-9]*"/>
+        </div>
+      </div>
+      <div class="row">
+        <div>
+          <label for="telefono">Teléfono</label>
+          <input id="telefono" name="Telefono" inputmode="tel"/>
+        </div>
+        <div>
+          <label for="correo">Correo electrónico</label>
+          <input id="correo" name="correo_electronico" type="email" />
+        </div>
+      </div>
+      <div>
+        <label for="direccion">Dirección</label>
+        <input id="direccion" name="Direccion"/>
+      </div>
+    </fieldset>
+
+    <div class="right">
+      <button class="btn" type="submit">Guardar</button>
+    </div>
+    <p id="estado" class="msg"></p>
+  </form>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  // === MISMA CONEXIÓN (Login/Registro) ===
+  const sb = supabase.createClient(
+    "https://wdfxnrsshcpllgkynedo.supabase.co",
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndkZnhucnNzaGNwbGxna3luZWRvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIwODEyOTgsImV4cCI6MjA3NzY1NzI5OH0.maiNsWZ52NnMOQjCfZUbh3zwmNv2KgMxHCFP2ulssTo"
+  );
+
+  // === CONFIG opcional para guardar foto en Supabase Storage ===
+  const USE_STORAGE = false;             // ← pon true si crearás el bucket 'avatars'
+  const STORAGE_BUCKET = "avatars";      // crea este bucket y habilita política de subida/lectura
+
+  const estado = document.getElementById('estado');
+  const form   = document.getElementById('form-perfil');
+  const fotoIn = document.getElementById('foto');
+  const prev   = document.getElementById('foto-preview');
+
+  // Cargar datos desde localStorage
+  const uLS = JSON.parse(localStorage.getItem('usuario') || 'null') || {};
+  document.getElementById('nombre').value    = uLS.Nombre || uLS.nombre || '';
+  document.getElementById('cedula').value    = uLS.Cedula || uLS.cedula || '';
+  document.getElementById('telefono').value  = uLS.Telefono || uLS.telefono || '';
+  document.getElementById('correo').value    = uLS.correo_electronico || uLS.correo || '';
+  document.getElementById('direccion').value = uLS.Direccion || uLS.direccion || '';
+  if (uLS.Foto || uLS.FotoDataUrl) prev.src = uLS.Foto || uLS.FotoDataUrl;
+
+  // Preview de la foto (local)
+  fotoIn.addEventListener('change', ()=>{
+    const f = fotoIn.files?.[0];
+    if(!f) return;
+    const reader = new FileReader();
+    reader.onload = () => { prev.src = reader.result; };
+    reader.readAsDataURL(f);
+  });
+
+  // Utilidades
+  const onlyDigits = v => (v||"").toString().replace(/\D/g,'');
+  const toNumberOrNull = v => {
+    const d = onlyDigits(v);
+    return d ? Number(d) : null;
+  };
+
+  // Subir foto a Storage (opcional)
+  async function uploadAvatarIfNeeded(userIdOrEmail){
+    if (!USE_STORAGE) return { url: uLS.Foto || null }; // no usar storage
+    const file = fotoIn.files?.[0];
+    if (!file) return { url: uLS.Foto || null };
+
+    const path = `${encodeURIComponent(userIdOrEmail || 'unknown')}/avatar_${Date.now()}_${file.name}`;
+    const { data, error } = await sb.storage.from(STORAGE_BUCKET).upload(path, file, {
+      upsert: true,
+      cacheControl: '3600',
+      contentType: file.type || 'image/jpeg'
+    });
+    if (error) return { error };
+
+    const { data:pub } = sb.storage.from(STORAGE_BUCKET).getPublicUrl(data.path);
+    return { url: pub?.publicUrl || null };
+  }
+
+  // Guardar
+  form.addEventListener('submit', async (e)=>{
+    e.preventDefault();
+    estado.style.color = '#b84040';
+    estado.textContent = '';
+
+    // Recolectar del form
+    const payload = {
+      Nombre: document.getElementById('nombre').value.trim(),
+      Cedula: document.getElementById('cedula').value.trim(),
+      Telefono: toNumberOrNull(document.getElementById('telefono').value),
+      correo_electronico: document.getElementById('correo').value.trim(),
+      Direccion: document.getElementById('direccion').value.trim()
+    };
+
+    // Subir foto si corresponde
+    let fotoUrl = null;
+    try{
+      const who = uLS.id || payload.correo_electronico || payload.Nombre;
+      const up = await uploadAvatarIfNeeded(who);
+      if (up?.error) console.warn('Storage error:', up.error);
+      fotoUrl = up?.url || null;
+    }catch(_e){ /* ignora errores de storage si no hay bucket/políticas */ }
+
+    try{
+      let dbError = null, updated = null;
+
+      // 1) Preferir UPDATE por id (si el login guardó id)
+      if (uLS.id){
+        const updateData = {
+          Nombre: payload.Nombre || null,
+          Direccion: payload.Direccion || null,
+          Telefono: payload.Telefono,
+          Cedula: payload.Cedula || null,
+          ...(fotoUrl ? { Foto: fotoUrl } : {})
+        };
+
+        const { data, error } = await sb.from('Cliente')
+          .update(updateData)
+          .eq('id', uLS.id)
+          .select('id, Nombre, Rol, correo_electronico, Direccion, Telefono, Cedula, Foto')
+          .maybeSingle();
+
+        dbError = error;
+        updated = data;
+      }
+      // 2) Si no hay id, UPSERT por correo (requiere onConflict en correo)
+      else if (payload.correo_electronico){
+        const upsertRow = {
+          Nombre: payload.Nombre || null,
+          Direccion: payload.Direccion || null,
+          Telefono: payload.Telefono,
+          Cedula: payload.Cedula || null,
+          correo_electronico: payload.correo_electronico,
+          ...(fotoUrl ? { Foto: fotoUrl } : {})
+        };
+
+        const { data, error } = await sb.from('Cliente')
+          .upsert(upsertRow, { onConflict: 'correo_electronico' })
+          .select('id, Nombre, Rol, correo_electronico, Direccion, Telefono, Cedula, Foto')
+          .maybeSingle();
+
+        dbError = error;
+        updated = data;
+      }
+
+      if (dbError) throw dbError;
+
+      // Guardar localmente (incluye fallback a DataURL si no hay URL pública)
+      const nuevoLocal = {
+        ...uLS,
+        ...updated,                                   // refresca con lo devuelto por DB
+        Nombre: payload.Nombre || updated?.Nombre || uLS.Nombre,
+        Direccion: payload.Direccion ?? updated?.Direccion ?? uLS.Direccion,
+        Telefono: payload.Telefono ?? updated?.Telefono ?? uLS.Telefono,
+        Cedula: payload.Cedula ?? updated?.Cedula ?? uLS.Cedula,
+        correo_electronico: payload.correo_electronico || updated?.correo_electronico || uLS.correo_electronico,
+        // Foto: usa URL de Storage si existe; si no, conserva la previa o el DataURL de preview
+        Foto: fotoUrl || updated?.Foto || uLS.Foto || null,
+        FotoDataUrl: !fotoUrl ? (prev.src || uLS.FotoDataUrl || null) : null
+      };
+
+      localStorage.setItem('usuario', JSON.stringify(nuevoLocal));
+
+      // Feedback
+      estado.style.color = '#1f8f5f';
+      estado.textContent = '✅ Perfil guardado';
+
+      // Opcional: volver al home y refrescar header para ver el nombre actualizado
+      // setTimeout(()=> location.href = 'index.html', 700);
+
+    }catch(err){
+      console.error(err);
+      // Aún si falla la DB, permanece guardado localmente
+      const nuevoLocal = {
+        ...uLS,
+        Nombre: payload.Nombre || uLS.Nombre,
+        Direccion: payload.Direccion || uLS.Direccion,
+        Telefono: payload.Telefono ?? uLS.Telefono,
+        Cedula: payload.Cedula || uLS.Cedula,
+        correo_electronico: payload.correo_electronico || uLS.correo_electronico,
+        FotoDataUrl: prev.src || uLS.FotoDataUrl || null
+      };
+      localStorage.setItem('usuario', JSON.stringify(nuevoLocal));
+      estado.textContent = '⚠️ Guardado local. No se pudo actualizar en la base de datos.';
+    }
+  });
+</script>
+
+</body>
+</html>

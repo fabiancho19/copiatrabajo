@@ -66,6 +66,37 @@
     </details>
     <span class="brand">KAVA</span>
     <a id="carrito-link" class="cart-link" href="carrito.html" target="_blank" aria-label="Abrir carrito" title="Carrito">🛒</a>
+    <!-- Trigger (icono usuario) -->
+<button id="user-trigger" class="icon-btn" type="button" aria-haspopup="menu" aria-expanded="false" hidden>
+  <!-- SVG ícono usuario (estilo outline) -->
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+    <circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.8"/>
+    <path d="M4 20c0-4 4-6 8-6s8 2 8 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+  </svg>
+</button>
+
+<!-- Menú del usuario -->
+<nav id="user-menu" class="user-menu" role="menu" hidden>
+  <button type="button" role="menuitem" id="go-profile">Perfil</button>
+  <button type="button" role="menuitem" id="logout">Cerrar sesión</button>
+</nav>
+<!-- Trigger (icono + nombre) -->
+<button id="user-trigger" class="icon-chip" type="button" aria-haspopup="menu" aria-expanded="false" hidden>
+  <span class="icon-circle" aria-hidden="true">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M4 20c0-4 4-6 8-6s8 2 8 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+  </span>
+  <span id="user-trigger-name" class="chip-name">Invitado</span>
+</button>
+
+<!-- Menú -->
+<nav id="user-menu" class="user-menu" role="menu" hidden>
+  <button type="button" role="menuitem" id="go-profile">Perfil</button>
+  <button type="button" role="menuitem" id="logout">Cerrar sesión</button>
+</nav>
+
     <form id="buscador-form" role="search" aria-label="Buscar productos" action="#novedades">
       <label for="buscador" hidden>Buscar</label>
       <input id="buscador" name="q" type="search" placeholder="Buscar…" autocomplete="off" />

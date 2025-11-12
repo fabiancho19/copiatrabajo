@@ -116,61 +116,62 @@
   </main>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script>
-    const sb = supabase.createClient(
-      "https://wdfxnrsshcpllgkynedo.supabase.co",
-      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndkZnhucnNzaGNwbGxna3luZWRvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIwODEyOTgsImV4cCI6MjA3NzY1NzI5OH0.maiNsWZ52NnMOQjCfZUbh3zwmNv2KgMxHCFP2ulssTo"
-    );
+ <script>
+  const sb = supabase.createClient(
+    "https://wdfxnrsshcpllgkynedo.supabase.co",
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndkZnhucnNzaGNwbGxna3luZWRvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIwODEyOTgsImV4cCI6MjA3NzY1NzI5OH0.maiNsWZ52NnMOQjCfZUbh3zwmNv2KgMxHCFP2ulssTo"
+  );
 
-    const form = document.getElementById("form-login");
-    const btn  = document.getElementById("btn-login");
-    const msg  = document.getElementById("msg");
+  const form = document.getElementById("form-login");
+  const btn  = document.getElementById("btn-login");
+  const msg  = document.getElementById("msg");
 
-    form.addEventListener("submit", async (e)=>{
-      e.preventDefault();
-      msg.textContent = "";
-      btn.disabled = true;
+  form.addEventListener("submit", async (e)=>{
+    e.preventDefault();
+    msg.textContent = "";
+    btn.disabled = true;
 
-      try{
-        const fd = new FormData(form);
-        const email = fd.get("correo").trim();
-        const pass  = fd.get("password");
+    try{
+      const fd = new FormData(form);
+      const email = fd.get("correo").trim();
+      const pass  = fd.get("password");
 
-        const { data, error } = await sb
-          .from("Cliente")
-          .select("Nombre, Rol, correo_electronico")
-          .eq("correo_electronico", email)
-          .eq("Contraseña", pass)
-          .maybeSingle();
+      const { data, error } = await sb
+        .from("Cliente")
+        .select("id, Nombre, Rol, correo_electronico")   // ← incluimos id
+        .eq("correo_electronico", email)
+        .eq("Contraseña", pass)
+        .maybeSingle();
 
-        if(error || !data){
-          msg.style.color = "#b00020";
-          msg.textContent = "❌ Correo o contraseña incorrectos";
-          return;
-        }
-
-        localStorage.setItem("usuario", JSON.stringify(data));
-        localStorage.setItem("rol", data.Rol || "cliente");
-
-        msg.style.color = "green";
-        msg.textContent = "✅ Bienvenido " + data.Nombre;
-
-        setTimeout(()=>{
-          if((data.Rol||"").toLowerCase()==="admin"){
-            location.href = "admin.html";
-          }else{
-            location.href = "index.html";
-          }
-        }, 700);
-
-      }catch(err){
-        console.error(err);
+      if(error || !data){
         msg.style.color = "#b00020";
-        msg.textContent = "❌ Error inesperado.";
-      }finally{
-        btn.disabled = false;
+        msg.textContent = "❌ Correo o contraseña incorrectos";
+        return;
       }
-    });
-  </script>
+
+      localStorage.setItem("usuario", JSON.stringify(data));       // guarda id también
+      localStorage.setItem("rol", (data.Rol || "cliente"));
+
+      msg.style.color = "green";
+      msg.textContent = "✅ Bienvenido " + (data.Nombre || "");
+
+      setTimeout(()=>{
+        if((data.Rol||"").toLowerCase()==="admin"){
+          location.href = "admin.html";
+        }else{
+          location.href = "index.html";
+        }
+      }, 700);
+
+    }catch(err){
+      console.error(err);
+      msg.style.color = "#b00020";
+      msg.textContent = "❌ Error inesperado.";
+    }finally{
+      btn.disabled = false;
+    }
+  });
+</script>
+
 </body>
 </html>
